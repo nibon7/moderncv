@@ -7,7 +7,8 @@ fn main() {
     doc.preamble.push(firstname("John"));
     doc.preamble.push(familyname("Doe"));
     doc.preamble.title("Design enthusiast");
-    doc.preamble.push(address("12 somestreet"));
+    doc.preamble
+        .push(address("12 somestreet", Some("3456 somecity"), None));
     doc.preamble.push(mobile("+123 456 7890"));
     doc.preamble.push(phone("+12 (3)456 78 90"));
     doc.preamble.push(email("jdoe@design.org"));

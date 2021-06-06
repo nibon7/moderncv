@@ -2,46 +2,104 @@
 
 use latex::PreambleElement;
 
-/// Define functions for moderncv
 macro_rules! moderncv {
-    ($fun:ident, $ret:ty, $doc:expr) => {
+    ($fun:ident, {$arg:ident}, $ret:ty, $doc:literal) => {
         #[doc = $doc]
-        pub fn $fun<S: AsRef<str>>(s: S) -> $ret {
-            <$ret>::UserDefined(format!(r"\{}{{{}}}", stringify!($fun), s.as_ref()))
+        pub fn $fun<S: AsRef<str>>($arg: S) -> $ret {
+            <$ret>::UserDefined(format!(r"\{}{{{}}}", stringify!($fun), $arg.as_ref()))
         }
     };
 
-    ($fun:ident, $opt:ident, $ret:ty, $doc:expr) => {
+    ($fun:ident, {$arg:ident}, {$extra:ident}, $ret:ty, $doc:literal) => {
         #[doc = $doc]
-        pub fn $fun<S: AsRef<str>>(s: S, opt: Option<S>) -> $ret {
-            match opt {
-                Some(opt) => <$ret>::UserDefined(format!(
+        pub fn $fun<S: AsRef<str>>($arg: S, $extra: S) -> $ret {
+            <$ret>::UserDefined(format!(
+                r"\{}{{{}}}{{{}}}",
+                stringify!($fun),
+                $arg.as_ref(),
+                $extra.as_ref()
+            ))
+        }
+    };
+
+    ($fun:ident, {$arg:ident}, {$extra1:ident}, {$extra2:ident}, $ret:ty, $doc:literal) => {
+        #[doc = $doc]
+        pub fn $fun<S: AsRef<str>>($arg: S, $extra1: Option<S>, $extra2: Option<S>) -> $ret {
+            let mut s = format!(r"\{}{{{}}}", stringify!($fun), $arg.as_ref());
+            match $extra1 {
+                Some(extra) => s.push_str(&format!(r"{{{}}}", extra.as_ref())),
+                None => return <$ret>::UserDefined(s),
+            }
+
+            if let Some(extra) = $extra2 {
+                s.push_str(&format!(r"{{{}}}", extra.as_ref()));
+            }
+
+            <$ret>::UserDefined(s)
+        }
+    };
+
+    ($fun:ident, [$opt:ident], {$arg:ident}, $ret:ty, $doc:literal) => {
+        #[doc = $doc]
+        pub fn $fun<S: AsRef<str>>($arg: S, $opt: Option<S>) -> $ret {
+            let s = match $opt {
+                Some(opt) => format!(
                     r"\{}[{}]{{{}}}",
                     stringify!($fun),
                     opt.as_ref(),
-                    s.as_ref()
-                )),
-                None => <$ret>::UserDefined(format!(r"\{}{{{}}}", stringify!($fun), s.as_ref(),)),
-            }
+                    $arg.as_ref()
+                ),
+                None => format!(r"\{}{{{}}}", stringify!($fun), $arg.as_ref()),
+            };
+
+            <$ret>::UserDefined(s)
         }
     };
 }
 
-moderncv!(firstname, PreambleElement, "First name");
-moderncv!(familyname, PreambleElement, "Family name");
-moderncv!(address, PreambleElement, "Address");
-moderncv!(mobile, PreambleElement, "Mobile");
-moderncv!(phone, PreambleElement, "Photo");
-moderncv!(fax, PreambleElement, "Fax");
-moderncv!(email, PreambleElement, "Email");
-moderncv!(moderncvtheme, opt, PreambleElement, "Moderncv theme");
-moderncv!(extrainfo, PreambleElement, "Extra infomation");
-moderncv!(photo, opt, PreambleElement, "Photo");
-moderncv!(quote, PreambleElement, "Quote");
+moderncv!(name, { fistname }, { lastname }, PreambleElement, "Name");
+moderncv!(firstname, { firstname }, PreambleElement, "First name");
+moderncv!(familyname, { familyname }, PreambleElement, "Family name");
+moderncv!(
+    address,
+    { street },
+    { city },
+    { country },
+    PreambleElement,
+    "Address"
+);
+moderncv!(mobile, { mobile }, PreambleElement, "Mobile");
+moderncv!(phone, { phone }, PreambleElement, "Phone");
+moderncv!(fax, { fax }, PreambleElement, "Fax");
+moderncv!(email, { email }, PreambleElement, "Email");
+moderncv!(
+    moderncvtheme,
+    [opt],
+    { theme },
+    PreambleElement,
+    "Moderncv theme"
+);
+moderncv!(
+    extrainfo,
+    { extrainfo },
+    PreambleElement,
+    "Extra infomation"
+);
+moderncv!(photo, [opt], { photo }, PreambleElement, "Photo");
+moderncv!(quote, { quote }, PreambleElement, "Quote");
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_name() {
+        assert_eq!(
+            name("John", "Doe"),
+            PreambleElement::UserDefined(r"\name{John}{Doe}".to_string())
+        );
+    }
+
     #[test]
     fn test_firstname() {
         assert_eq!(
@@ -61,7 +119,12 @@ mod tests {
     #[test]
     fn test_address() {
         assert_eq!(
-            address("12 somestreet"),
+            address("12 somestreet", Some("3456 somecity"), None),
+            PreambleElement::UserDefined(r"\address{12 somestreet}{3456 somecity}".to_string())
+        );
+
+        assert_eq!(
+            address("12 somestreet", None, Some("unused")),
             PreambleElement::UserDefined(r"\address{12 somestreet}".to_string())
         );
     }
