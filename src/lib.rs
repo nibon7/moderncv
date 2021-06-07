@@ -45,7 +45,7 @@ pub trait CVPreamble {
     fn phone(&mut self, phone: &str) -> &mut Self;
     fn fax(&mut self, fax: &str) -> &mut Self;
     fn email(&mut self, email: &str) -> &mut Self;
-    fn theme(&mut self, theme: &str, opt: Option<&str>) -> &mut Self;
+    fn cvtheme(&mut self, theme: &str, opt: Option<&str>) -> &mut Self;
     fn extrainfo(&mut self, info: &str) -> &mut Self;
     fn photo(&mut self, photo: &str, width: Option<&str>, frame: Option<&str>) -> &mut Self;
     fn quote(&mut self, quote: &str) -> &mut Self;
@@ -163,7 +163,7 @@ impl CVPreamble for Preamble {
     }
 
     /// Set moderncv theme
-    fn theme(&mut self, theme: &str, opt: Option<&str>) -> &mut Self {
+    fn cvtheme(&mut self, theme: &str, opt: Option<&str>) -> &mut Self {
         let s = texify!("moderncvtheme", [opt], theme);
         let elem = PreambleElement::UserDefined(s);
         self.push(elem);
@@ -312,16 +312,16 @@ mod tests {
     }
 
     #[test]
-    fn test_theme() {
+    fn test_cvtheme() {
         let mut preamble = Preamble::default();
-        preamble.theme("classic", None);
+        preamble.cvtheme("classic", None);
 
         let left = preamble.iter().nth(0).unwrap();
         let right = PreambleElement::UserDefined(r"\moderncvtheme{classic}".to_string());
         assert!(left.eq(&right));
 
         let mut preamble = Preamble::default();
-        preamble.theme("casual", Some("green"));
+        preamble.cvtheme("casual", Some("green"));
 
         let left = preamble.iter().nth(0).unwrap();
         let right = PreambleElement::UserDefined(r"\moderncvtheme[green]{casual}".to_string());
