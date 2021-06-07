@@ -2,9 +2,14 @@
 
 use latex::{DocumentClass, Preamble, PreambleElement};
 
+/// TeXify strings
+#[macro_export]
 macro_rules! texify {
+    ($name:expr) => {{
+        format!(r"\{}", $name)
+    }};
     ($name:expr $(,[$opt:ident])* $(,$extra:ident)+) => {{
-        let mut s = format!(r"\{}", $name);
+        let mut s = texify!($name);
 
         $(
             if let Some(opt) = $opt {
