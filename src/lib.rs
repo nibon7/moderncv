@@ -13,16 +13,12 @@ macro_rules! texify {
 
         $(
             if let Some(opt) = $opt {
-                s.push('[');
-                s.push_str(opt);
-                s.push(']');
+                s.push_str(&format!(r"[{}]", opt));
             }
         )*
 
         $(
-            s.push('{');
-            s.push_str($extra);
-            s.push('}');
+            s.push_str(&format!(r"{{{}}}", $extra));
         )+
             s
     }};
@@ -31,6 +27,110 @@ macro_rules! texify {
 /// DocumentClass for moderncv
 pub fn document_class() -> DocumentClass {
     DocumentClass::Other("moderncv".to_string())
+}
+
+/// Social media types
+pub enum SocialType {
+    LinkedIn,
+    XING,
+    Twitter,
+    Github,
+    Gitlab,
+    StackOverflow,
+    Bitbucket,
+    Skype,
+    ORCID,
+    ResearchGate,
+    ResearcherID,
+    Telegram,
+    GoogleScholar,
+}
+
+impl std::fmt::Display for SocialType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            Self::LinkedIn => write!(f, "linkedin"),
+            Self::XING => write!(f, "xing"),
+            Self::Twitter => write!(f, "twitter"),
+            Self::Github => write!(f, "github"),
+            Self::Gitlab => write!(f, "gitlab"),
+            Self::StackOverflow => write!(f, "stackoverflow"),
+            Self::Bitbucket => write!(f, "bitbucket"),
+            Self::Skype => write!(f, "skype"),
+            Self::ORCID => write!(f, "orcid"),
+            Self::ResearchGate => write!(f, "researchgate"),
+            Self::ResearcherID => write!(f, "researcherid"),
+            Self::Telegram => write!(f, "telegram"),
+            Self::GoogleScholar => write!(f, "googlescholar"),
+        }
+    }
+}
+
+/// Phone types
+pub enum PhoneType {
+    Fixed,
+    Mobile,
+    Fax,
+}
+
+impl std::fmt::Display for PhoneType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            Self::Fixed => write!(f, "fixed"),
+            Self::Mobile => write!(f, "mobile"),
+            Self::Fax => write!(f, "fax"),
+        }
+    }
+}
+
+/// Moderncv colors
+pub enum Color {
+    Black,
+    Blue,
+    Burgundy,
+    Green,
+    Grey,
+    Orange,
+    Purple,
+    Red,
+}
+
+impl std::fmt::Display for Color {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            Self::Black => write!(f, "black"),
+            Self::Blue => write!(f, "blue"),
+            Self::Burgundy => write!(f, "burgundy"),
+            Self::Green => write!(f, "green"),
+            Self::Grey => write!(f, "grey"),
+            Self::Orange => write!(f, "orange"),
+            Self::Purple => write!(f, "purple"),
+            Self::Red => write!(f, "red"),
+        }
+    }
+}
+
+/// Moderncv styles
+pub enum Style {
+    Banking,
+    Casual,
+    Classic,
+    Empty,
+    Fancy,
+    OldStyle,
+}
+
+impl std::fmt::Display for Style {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            Self::Banking => write!(f, "banking"),
+            Self::Casual => write!(f, "casual"),
+            Self::Classic => write!(f, "classic"),
+            Self::Empty => write!(f, "empty"),
+            Self::Fancy => write!(f, "fancy"),
+            Self::OldStyle => write!(f, "oldstyle"),
+        }
+    }
 }
 
 /// A trait which implement useful functions for moderncv preamble
@@ -42,10 +142,12 @@ pub trait CVPreamble {
     fn familyname(&mut self, familyname: &str) -> &mut Self;
     fn address(&mut self, street: &str, city: Option<&str>, country: Option<&str>) -> &mut Self;
     fn mobile(&mut self, mobile: &str) -> &mut Self;
-    fn phone(&mut self, phone: &str) -> &mut Self;
+    fn phone(&mut self, number: &str, phone_type: Option<PhoneType>) -> &mut Self;
     fn fax(&mut self, fax: &str) -> &mut Self;
     fn email(&mut self, email: &str) -> &mut Self;
-    fn cvtheme(&mut self, theme: &str, opt: Option<&str>) -> &mut Self;
+    fn social(&mut self, account: &str, social_type: SocialType, url: Option<&str>) -> &mut Self;
+    fn homepage(&mut self, homepage: &str) -> &mut Self;
+    fn cvtheme(&mut self, style: Style, color: Option<Color>) -> &mut Self;
     fn extrainfo(&mut self, info: &str) -> &mut Self;
     fn photo(&mut self, photo: &str, width: Option<&str>, frame: Option<&str>) -> &mut Self;
     fn quote(&mut self, quote: &str) -> &mut Self;
@@ -136,8 +238,8 @@ impl CVPreamble for Preamble {
     }
 
     /// Set phone number
-    fn phone(&mut self, phone: &str) -> &mut Self {
-        let s = texify!("phone", phone);
+    fn phone(&mut self, number: &str, phone_type: Option<PhoneType>) -> &mut Self {
+        let s = texify!("phone", [phone_type], number);
         let elem = PreambleElement::UserDefined(s);
         self.push(elem);
 
@@ -162,9 +264,35 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set social link
+    fn social(&mut self, account: &str, social_type: SocialType, url: Option<&str>) -> &mut Self {
+        let mut s = texify!("social");
+        s.push_str(&format!(r"[{}]", social_type));
+
+        if let Some(url) = url {
+            s.push_str(&format!(r"[{}]", url));
+        }
+
+        s.push_str(&format!(r"{{{}}}", account));
+
+        let elem = PreambleElement::UserDefined(s);
+        self.push(elem);
+
+        self
+    }
+
+    /// Set home page
+    fn homepage(&mut self, homepage: &str) -> &mut Self {
+        let s = texify!("homepage", homepage);
+        let elem = PreambleElement::UserDefined(s);
+        self.push(elem);
+
+        self
+    }
+
     /// Set moderncv theme
-    fn cvtheme(&mut self, theme: &str, opt: Option<&str>) -> &mut Self {
-        let s = texify!("moderncvtheme", [opt], theme);
+    fn cvtheme(&mut self, style: Style, color: Option<Color>) -> &mut Self {
+        let s = texify!("moderncvtheme", [color], style);
         let elem = PreambleElement::UserDefined(s);
         self.push(elem);
 
@@ -284,10 +412,10 @@ mod tests {
     #[test]
     fn test_phone() {
         let mut preamble = Preamble::default();
-        preamble.phone("12 (3)456 78 90");
+        preamble.phone("12 (3)456 78 90", Some(PhoneType::Mobile));
 
         let left = preamble.iter().nth(0).unwrap();
-        let right = PreambleElement::UserDefined(r"\phone{12 (3)456 78 90}".to_string());
+        let right = PreambleElement::UserDefined(r"\phone[mobile]{12 (3)456 78 90}".to_string());
         assert!(left.eq(&right));
     }
 
@@ -312,16 +440,37 @@ mod tests {
     }
 
     #[test]
+    fn test_social() {
+        let mut preamble = Preamble::default();
+        preamble.social(r"my\_account", SocialType::Github, None);
+
+        let left = preamble.iter().nth(0).unwrap();
+        let right = PreambleElement::UserDefined(r"\social[github]{my\_account}".to_string());
+        assert!(left.eq(&right));
+    }
+
+    #[test]
+    fn test_homepage() {
+        let mut preamble = Preamble::default();
+        preamble.homepage(r"https://github.com/my\_home");
+
+        let left = preamble.iter().nth(0).unwrap();
+        let right =
+            PreambleElement::UserDefined(r"\homepage{https://github.com/my\_home}".to_string());
+        assert!(left.eq(&right));
+    }
+
+    #[test]
     fn test_cvtheme() {
         let mut preamble = Preamble::default();
-        preamble.cvtheme("classic", None);
+        preamble.cvtheme(Style::Classic, None);
 
         let left = preamble.iter().nth(0).unwrap();
         let right = PreambleElement::UserDefined(r"\moderncvtheme{classic}".to_string());
         assert!(left.eq(&right));
 
         let mut preamble = Preamble::default();
-        preamble.cvtheme("casual", Some("green"));
+        preamble.cvtheme(Style::Casual, Some(Color::Green));
 
         let left = preamble.iter().nth(0).unwrap();
         let right = PreambleElement::UserDefined(r"\moderncvtheme[green]{casual}".to_string());
