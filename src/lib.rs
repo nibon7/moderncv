@@ -1,6 +1,6 @@
 //! An ergonomic library for programatically generating LaTeX resume.
 
-use latex::{Preamble, PreambleElement};
+use latex::{DocumentClass, Preamble, PreambleElement};
 
 macro_rules! texify {
     ($name:expr $(,[$opt:ident])* $(,$extra:ident)+) => {{
@@ -21,6 +21,11 @@ macro_rules! texify {
         )+
             s
     }};
+}
+
+/// DocumentClass for moderncv
+pub fn document_class() -> DocumentClass {
+    DocumentClass::Other("moderncv".to_string())
 }
 
 /// A trait which implement useful functions for moderncv preamble

@@ -1,8 +1,8 @@
-use latex::{Document, DocumentClass, Element};
-use moderncv::CVPreamble;
+use latex::{Document, Element};
+use moderncv::{document_class, CVPreamble};
 
 fn main() {
-    let mut doc = Document::new(DocumentClass::Other("moderncv".to_string()));
+    let mut doc = Document::new(document_class());
     doc.preamble.theme("casual", Some("green"));
     doc.preamble.firstname("John");
     doc.preamble.familyname("Doe");
