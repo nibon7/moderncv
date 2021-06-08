@@ -1,5 +1,6 @@
 use latex::{Document, Element};
-use moderncv::{document_class, CVPreamble, Color, Style};
+use moderncv::document_class;
+use moderncv::preamble::{CVPreamble, Color, Style};
 
 fn main() {
     let mut doc = Document::new(document_class());
