@@ -3,6 +3,10 @@
 use latex::DocumentClass;
 
 pub mod preamble;
+pub mod section;
+
+pub use preamble::CVPreamble;
+pub use section::CVSection;
 
 /// TeXify strings
 #[macro_export]
