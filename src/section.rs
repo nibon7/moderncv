@@ -33,7 +33,6 @@ pub trait CVSection {
 }
 
 impl CVSection for Section {
-    /// Describe your education or your job experiences
     fn cventry(
         &mut self,
         years: &str,
@@ -43,34 +42,19 @@ impl CVSection for Section {
         grade: Option<&str>,
         comment: Option<&str>,
     ) -> &mut Self {
-        let mut s = texify!("cventry", years, job, employer, localization);
-
-        match grade {
-            Some(grade) => s.push_str(&format!(r"{{{}}}", grade)),
-            None => s.push_str(r"{}"),
-        }
-
-        match comment {
-            Some(comment) => s.push_str(&format!(r"{{{}}}", comment)),
-            None => s.push_str(r"{}"),
-        }
-
-        let elem = Element::UserDefined(s);
+        let elem = self::cventry(years, job, employer, localization, grade, comment);
         self.push(elem);
 
         self
     }
 
-    /// Describe language skills
     fn cvlanguage(&mut self, name: &str, level: &str, comment: &str) -> &mut Self {
-        let s = texify!("cvlanguage", name, level, comment);
-        let elem = Element::UserDefined(s);
+        let elem = self::cvlanguage(name, level, comment);
         self.push(elem);
 
         self
     }
 
-    /// Describe computer skills
     fn cvcomputer(
         &mut self,
         category1: &str,
@@ -78,23 +62,19 @@ impl CVSection for Section {
         category2: &str,
         programs2: &str,
     ) -> &mut Self {
-        let s = texify!("cvcomputer", category1, programs1, category2, programs2);
-        let elem = Element::UserDefined(s);
+        let elem = self::cvcomputer(category1, programs1, category2, programs2);
         self.push(elem);
 
         self
     }
 
-    /// Typeset lines with a hint on the left
     fn cvline(&mut self, leftmark: &str, text: &str) -> &mut Self {
-        let s = texify!("cvline", leftmark, text);
-        let elem = Element::UserDefined(s);
+        let elem = self::cvline(leftmark, text);
         self.push(elem);
 
         self
     }
 
-    /// Typeset entry with a description on the left, but in two columns inside a cvsection
     fn cvdoubleitem(
         &mut self,
         subtitle1: &str,
@@ -102,28 +82,83 @@ impl CVSection for Section {
         subtitle2: &str,
         text2: &str,
     ) -> &mut Self {
-        let s = texify!("cvdoubleitem", subtitle1, text1, subtitle2, text2);
-        let elem = Element::UserDefined(s);
+        let elem = self::cvdoubleitem(subtitle1, text1, subtitle2, text2);
         self.push(elem);
 
         self
     }
 
-    /// Typeset lists on one column inside a cvsection
     fn cvlistitem(&mut self, item: &str) -> &mut Self {
-        let s = texify!("cvlistitem", item);
-        let elem = Element::UserDefined(s);
+        let elem = self::cvlistitem(item);
         self.push(elem);
 
         self
     }
 
-    /// Typeseet lists on two columns inside a cvsection
     fn cvlistdoubleitem(&mut self, item1: &str, item2: &str) -> &mut Self {
-        let s = texify!("cvlistdoubleitem", item1, item2);
-        let elem = Element::UserDefined(s);
+        let elem = self::cvlistdoubleitem(item1, item2);
         self.push(elem);
 
         self
     }
+}
+
+/// Describe your education or your job experiences
+pub fn cventry(
+    years: &str,
+    job: &str,
+    employer: &str,
+    localization: &str,
+    grade: Option<&str>,
+    comment: Option<&str>,
+) -> Element {
+    let mut s = texify!("cventry", years, job, employer, localization);
+
+    match grade {
+        Some(grade) => s.push_str(&format!(r"{{{}}}", grade)),
+        None => s.push_str(r"{}"),
+    }
+
+    match comment {
+        Some(comment) => s.push_str(&format!(r"{{{}}}", comment)),
+        None => s.push_str(r"{}"),
+    }
+
+    Element::UserDefined(s)
+}
+
+/// Describe language skills
+pub fn cvlanguage(name: &str, level: &str, comment: &str) -> Element {
+    let s = texify!("cvlanguage", name, level, comment);
+    Element::UserDefined(s)
+}
+
+/// Describe computer skills
+pub fn cvcomputer(category1: &str, programs1: &str, category2: &str, programs2: &str) -> Element {
+    let s = texify!("cvcomputer", category1, programs1, category2, programs2);
+    Element::UserDefined(s)
+}
+
+/// Typeset lines with a hint on the left
+pub fn cvline(leftmark: &str, text: &str) -> Element {
+    let s = texify!("cvline", leftmark, text);
+    Element::UserDefined(s)
+}
+
+/// Typeset entry with a description on the left, but in two columns inside a cvsection
+pub fn cvdoubleitem(subtitle1: &str, text1: &str, subtitle2: &str, text2: &str) -> Element {
+    let s = texify!("cvdoubleitem", subtitle1, text1, subtitle2, text2);
+    Element::UserDefined(s)
+}
+
+/// Typeset lists on one column inside a cvsection
+pub fn cvlistitem(item: &str) -> Element {
+    let s = texify!("cvlistitem", item);
+    Element::UserDefined(s)
+}
+
+/// Typeset lists on two columns inside a cvsection
+pub fn cvlistdoubleitem(item1: &str, item2: &str) -> Element {
+    let s = texify!("cvlistdoubleitem", item1, item2);
+    Element::UserDefined(s)
 }

@@ -108,193 +108,250 @@ impl std::fmt::Display for Style {
 /// A trait which implement useful functions for moderncv preamble
 pub trait CVPreamble {
     fn name(&mut self, firstname: &str, lastname: &str) -> &mut Self;
-    fn firstname(&mut self, fistname: &str) -> &mut Self;
-    fn lastname(&mut self, lastname: &str) -> &mut Self;
-    fn givenname(&mut self, givenname: &str) -> &mut Self;
-    fn familyname(&mut self, familyname: &str) -> &mut Self;
+    fn firstname(&mut self, name: &str) -> &mut Self;
+    fn lastname(&mut self, name: &str) -> &mut Self;
+    fn givenname(&mut self, name: &str) -> &mut Self;
+    fn familyname(&mut self, name: &str) -> &mut Self;
     fn address(&mut self, street: &str, city: Option<&str>, country: Option<&str>) -> &mut Self;
-    fn mobile(&mut self, mobile: &str) -> &mut Self;
+    fn mobile(&mut self, number: &str) -> &mut Self;
     fn phone(&mut self, number: &str, phone_type: Option<PhoneType>) -> &mut Self;
-    fn fax(&mut self, fax: &str) -> &mut Self;
-    fn email(&mut self, email: &str) -> &mut Self;
+    fn fax(&mut self, number: &str) -> &mut Self;
+    fn email(&mut self, address: &str) -> &mut Self;
     fn social(&mut self, account: &str, social_type: SocialType, url: Option<&str>) -> &mut Self;
-    fn homepage(&mut self, homepage: &str) -> &mut Self;
+    fn homepage(&mut self, url: &str) -> &mut Self;
     fn cvtheme(&mut self, style: Style, color: Option<Color>) -> &mut Self;
     fn extrainfo(&mut self, info: &str) -> &mut Self;
     fn photo(&mut self, photo: &str, width: Option<&str>, frame: Option<&str>) -> &mut Self;
-    fn quote(&mut self, quote: &str) -> &mut Self;
+    fn quote(&mut self, msg: &str) -> &mut Self;
 }
 
 impl CVPreamble for Preamble {
-    /// Set name
     fn name(&mut self, firstname: &str, lastname: &str) -> &mut Self {
-        let s = texify!("name", firstname, lastname);
-        let elem = PreambleElement::UserDefined(s);
+        let elem = self::name(firstname, lastname);
         self.push(elem);
 
         self
     }
 
-    /// Set first name
-    fn firstname(&mut self, firstname: &str) -> &mut Self {
-        let s = texify!("firstname", firstname);
-        let elem = PreambleElement::UserDefined(s);
+    fn firstname(&mut self, name: &str) -> &mut Self {
+        let elem = self::firstname(name);
         self.push(elem);
 
         self
     }
 
-    /// Set last name
-    fn lastname(&mut self, lastname: &str) -> &mut Self {
-        let s = texify!("lastname", lastname);
-        let elem = PreambleElement::UserDefined(s);
+    fn lastname(&mut self, name: &str) -> &mut Self {
+        let elem = self::lastname(name);
         self.push(elem);
 
         self
     }
 
-    /// Set given name (First name)
-    fn givenname(&mut self, givenname: &str) -> &mut Self {
-        let s = texify!("givenname", givenname);
-        let elem = PreambleElement::UserDefined(s);
+    fn givenname(&mut self, name: &str) -> &mut Self {
+        let elem = self::givenname(name);
         self.push(elem);
 
         self
     }
 
-    /// Set family name (Last name)
-    fn familyname(&mut self, familyname: &str) -> &mut Self {
-        let s = texify!("familyname", familyname);
-        let elem = PreambleElement::UserDefined(s);
+    fn familyname(&mut self, name: &str) -> &mut Self {
+        let elem = self::familyname(name);
         self.push(elem);
 
         self
     }
 
-    /// Set address
     fn address(&mut self, street: &str, city: Option<&str>, country: Option<&str>) -> &mut Self {
-        let mut s = texify!("address", street);
-        match city {
-            Some(city) => {
-                s.push('{');
-                s.push_str(city);
-                s.push('}');
-            }
-            None => {
-                let elem = PreambleElement::UserDefined(s);
-                self.push(elem);
-
-                return self;
-            }
-        }
-
-        if let Some(country) = country {
-            s.push('{');
-            s.push_str(country);
-            s.push('}');
-        }
-
-        let elem = PreambleElement::UserDefined(s);
+        let elem = self::address(street, city, country);
         self.push(elem);
 
         self
     }
 
-    /// Set mobile number
-    fn mobile(&mut self, mobile: &str) -> &mut Self {
-        let s = texify!("mobile", mobile);
-        let elem = PreambleElement::UserDefined(s);
+    fn mobile(&mut self, number: &str) -> &mut Self {
+        let elem = self::mobile(number);
         self.push(elem);
 
         self
     }
 
-    /// Set phone number
     fn phone(&mut self, number: &str, phone_type: Option<PhoneType>) -> &mut Self {
-        let s = texify!("phone", [phone_type], number);
-        let elem = PreambleElement::UserDefined(s);
+        let elem = self::phone(number, phone_type);
         self.push(elem);
 
         self
     }
 
-    /// Set fax number
-    fn fax(&mut self, fax: &str) -> &mut Self {
-        let s = texify!("fax", fax);
-        let elem = PreambleElement::UserDefined(s);
+    fn fax(&mut self, number: &str) -> &mut Self {
+        let elem = self::fax(number);
         self.push(elem);
 
         self
     }
 
-    /// Set email address
-    fn email(&mut self, email: &str) -> &mut Self {
-        let s = texify!("email", email);
-        let elem = PreambleElement::UserDefined(s);
+    fn email(&mut self, address: &str) -> &mut Self {
+        let elem = self::email(address);
         self.push(elem);
 
         self
     }
 
-    /// Set social link
     fn social(&mut self, account: &str, social_type: SocialType, url: Option<&str>) -> &mut Self {
-        let mut s = texify!("social");
-        s.push_str(&format!(r"[{}]", social_type));
-
-        if let Some(url) = url {
-            s.push_str(&format!(r"[{}]", url));
-        }
-
-        s.push_str(&format!(r"{{{}}}", account));
-
-        let elem = PreambleElement::UserDefined(s);
+        let elem = self::social(account, social_type, url);
         self.push(elem);
 
         self
     }
 
-    /// Set home page
-    fn homepage(&mut self, homepage: &str) -> &mut Self {
-        let s = texify!("homepage", homepage);
-        let elem = PreambleElement::UserDefined(s);
+    fn homepage(&mut self, url: &str) -> &mut Self {
+        let elem = self::homepage(url);
         self.push(elem);
 
         self
     }
 
-    /// Set moderncv theme
     fn cvtheme(&mut self, style: Style, color: Option<Color>) -> &mut Self {
-        let s = texify!("moderncvtheme", [color], style);
-        let elem = PreambleElement::UserDefined(s);
+        let elem = self::cvtheme(style, color);
         self.push(elem);
 
         self
     }
 
-    /// Set extra information
     fn extrainfo(&mut self, info: &str) -> &mut Self {
-        let s = texify!("extrainfo", info);
-        let elem = PreambleElement::UserDefined(s);
+        let elem = self::extrainfo(info);
         self.push(elem);
 
         self
     }
 
-    /// Set photo
     fn photo(&mut self, photo: &str, width: Option<&str>, frame: Option<&str>) -> &mut Self {
-        let s = texify!("photo", [width], [frame], photo);
-        let elem = PreambleElement::UserDefined(s);
+        let elem = self::photo(photo, width, frame);
         self.push(elem);
 
         self
     }
 
-    /// Set quote string
-    fn quote(&mut self, quote: &str) -> &mut Self {
-        let s = texify!("quote", quote);
-        let elem = PreambleElement::UserDefined(s);
+    fn quote(&mut self, msg: &str) -> &mut Self {
+        let elem = self::quote(msg);
         self.push(elem);
 
         self
     }
+}
+
+/// Set name
+pub fn name(firstname: &str, lastname: &str) -> PreambleElement {
+    let s = texify!("name", firstname, lastname);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set first name
+pub fn firstname(name: &str) -> PreambleElement {
+    let s = texify!("firstname", name);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set last name
+pub fn lastname(name: &str) -> PreambleElement {
+    let s = texify!("lastname", name);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set given name (First name)
+pub fn givenname(name: &str) -> PreambleElement {
+    let s = texify!("givenname", name);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set family name (Last name)
+pub fn familyname(name: &str) -> PreambleElement {
+    let s = texify!("familyname", name);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set address
+pub fn address(street: &str, city: Option<&str>, country: Option<&str>) -> PreambleElement {
+    let mut s = texify!("address", street);
+    match city {
+        Some(city) => {
+            s.push_str(&format!("{{{}}}", city));
+        }
+        None => {
+            return PreambleElement::UserDefined(s);
+        }
+    }
+
+    if let Some(country) = country {
+        s.push_str(&format!("{{{}}}", country));
+    }
+
+    PreambleElement::UserDefined(s)
+}
+
+/// Set mobile number
+pub fn mobile(number: &str) -> PreambleElement {
+    let s = texify!("mobile", number);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set phone number
+pub fn phone(number: &str, phone_type: Option<PhoneType>) -> PreambleElement {
+    let s = texify!("phone", [phone_type], number);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set fax number
+pub fn fax(number: &str) -> PreambleElement {
+    let s = texify!("fax", number);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set email address
+pub fn email(address: &str) -> PreambleElement {
+    let s = texify!("email", address);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set social link
+pub fn social(account: &str, social_type: SocialType, url: Option<&str>) -> PreambleElement {
+    let mut s = texify!("social");
+    s.push_str(&format!(r"[{}]", social_type));
+
+    if let Some(url) = url {
+        s.push_str(&format!(r"[{}]", url));
+    }
+
+    s.push_str(&format!(r"{{{}}}", account));
+
+    PreambleElement::UserDefined(s)
+}
+
+/// Set home page
+pub fn homepage(url: &str) -> PreambleElement {
+    let s = texify!("homepage", url);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set moderncv theme
+pub fn cvtheme(style: Style, color: Option<Color>) -> PreambleElement {
+    let s = texify!("moderncvtheme", [color], style);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set extra information
+pub fn extrainfo(info: &str) -> PreambleElement {
+    let s = texify!("extrainfo", info);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set photo
+pub fn photo(photo: &str, width: Option<&str>, frame: Option<&str>) -> PreambleElement {
+    let s = texify!("photo", [width], [frame], photo);
+    PreambleElement::UserDefined(s)
+}
+
+/// Set quote string
+pub fn quote(msg: &str) -> PreambleElement {
+    let s = texify!("quote", msg);
+    PreambleElement::UserDefined(s)
 }
