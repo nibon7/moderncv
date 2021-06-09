@@ -5,6 +5,7 @@ edition = "2018"
 authors = ["nibon7 <nibon7@163.com>"]
 description = "An ergonomic library for programatically generating LaTeX resume."
 documentation = "https://docs.rs/moderncv"
+readme = "README.md"
 repository = "https://github.com/nibon7/moderncv-rs"
 license = "MIT"
 keywords = ["latex", "tex", "resume"]
