@@ -5,7 +5,7 @@ use latex::{DocumentClass, Element};
 pub mod preamble;
 pub mod section;
 
-pub use preamble::CVPreamble;
+pub use preamble::{CVPreamble, Color, PhoneType, SocialType, Style};
 pub use section::CVSection;
 
 /// TeXify strings

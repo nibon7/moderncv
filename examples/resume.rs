@@ -1,6 +1,5 @@
 use latex::{Document, Element, Section};
-use moderncv::preamble::{Color, Style};
-use moderncv::{closesection, document_class, texify, CVPreamble, CVSection};
+use moderncv::{closesection, document_class, texify, CVPreamble, CVSection, Color, Style};
 
 fn subsection(section: &str) -> Element {
     let s = texify!("subsection", section);
