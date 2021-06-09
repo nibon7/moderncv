@@ -126,6 +126,7 @@ pub trait CVPreamble {
 }
 
 impl CVPreamble for Preamble {
+    /// Set name
     fn name(&mut self, firstname: &str, lastname: &str) -> &mut Self {
         let elem = self::name(firstname, lastname);
         self.push(elem);
@@ -133,6 +134,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set first name
     fn firstname(&mut self, name: &str) -> &mut Self {
         let elem = self::firstname(name);
         self.push(elem);
@@ -140,6 +142,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set last name
     fn lastname(&mut self, name: &str) -> &mut Self {
         let elem = self::lastname(name);
         self.push(elem);
@@ -147,6 +150,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set given name (First name)
     fn givenname(&mut self, name: &str) -> &mut Self {
         let elem = self::givenname(name);
         self.push(elem);
@@ -154,6 +158,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set family name (Last name)
     fn familyname(&mut self, name: &str) -> &mut Self {
         let elem = self::familyname(name);
         self.push(elem);
@@ -161,6 +166,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set address
     fn address(&mut self, street: &str, city: Option<&str>, country: Option<&str>) -> &mut Self {
         let elem = self::address(street, city, country);
         self.push(elem);
@@ -168,6 +174,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set mobile number
     fn mobile(&mut self, number: &str) -> &mut Self {
         let elem = self::mobile(number);
         self.push(elem);
@@ -175,6 +182,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set phone number
     fn phone(&mut self, number: &str, phone_type: Option<PhoneType>) -> &mut Self {
         let elem = self::phone(number, phone_type);
         self.push(elem);
@@ -182,6 +190,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set fax number
     fn fax(&mut self, number: &str) -> &mut Self {
         let elem = self::fax(number);
         self.push(elem);
@@ -189,6 +198,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set email address
     fn email(&mut self, address: &str) -> &mut Self {
         let elem = self::email(address);
         self.push(elem);
@@ -196,6 +206,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set social link
     fn social(&mut self, account: &str, social_type: SocialType, url: Option<&str>) -> &mut Self {
         let elem = self::social(account, social_type, url);
         self.push(elem);
@@ -203,6 +214,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set home page
     fn homepage(&mut self, url: &str) -> &mut Self {
         let elem = self::homepage(url);
         self.push(elem);
@@ -210,6 +222,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set moderncv theme
     fn cvtheme(&mut self, style: Style, color: Option<Color>) -> &mut Self {
         let elem = self::cvtheme(style, color);
         self.push(elem);
@@ -217,6 +230,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set extra information
     fn extrainfo(&mut self, info: &str) -> &mut Self {
         let elem = self::extrainfo(info);
         self.push(elem);
@@ -224,6 +238,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set photo
     fn photo(&mut self, photo: &str, width: Option<&str>, frame: Option<&str>) -> &mut Self {
         let elem = self::photo(photo, width, frame);
         self.push(elem);
@@ -231,6 +246,7 @@ impl CVPreamble for Preamble {
         self
     }
 
+    /// Set quote string
     fn quote(&mut self, msg: &str) -> &mut Self {
         let elem = self::quote(msg);
         self.push(elem);
